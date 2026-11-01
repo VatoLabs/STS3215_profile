@@ -13,7 +13,7 @@ follows that target. The acceleration comes from two registers:
 **a = 100 steps/s² × min(Acceleration, Maximum_Acceleration)**, 0 acting as 50. One unit is 0.153 rad/s².
 LeRobot writes 254 to both, which gives 38.96 rad/s².
 
-**Evidence.** BAM's STS3215 model structure (Rhoban), fitted by us to BAM's public 12 V logs before we had any
+**Evidence.** BAM's STS3215 model structure (Rhoban), fitted by us to the public 12 V STS3215 logs (release `sts3215-12v-bam-data-v1` on the T-K-233/bam fork) before we had any
 bench data, and never fitted to the bench. Scored by mean absolute position error on a single-servo rod bench,
 over BAM's four powered trajectories. LeRobot's arm settings (P=16, Acceleration 254) unless stated. Loads are
 gravity torques.
@@ -46,7 +46,7 @@ fall, not modelled: 74 mrad) was excluded at that point. The full per-arm calibr
 **Credits.**
 - [MetalSim](https://github.com/pulipakaa24/MetalSim) wrote down the same formula on 31 Oct and marked it inferred.
 - [sts3215-firmware](https://github.com/0o8o0-blip/sts3215-firmware) implements a trapezoid profile and attributes the response delay to it.
-- [BAM](https://github.com/Rhoban/bam) (arXiv 2410.08650) supplied the servo model.
+- [BAM](https://github.com/Rhoban/bam) (arXiv 2410.08650) supplied the servo model; its STS3215 actuator already rate-limits the internal target (`max_velocity`), and this adds the acceleration limit on top.
 - [LeRobot](https://github.com/huggingface/lerobot) sets the arm's registers.
 
 ## Use
