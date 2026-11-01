@@ -17,3 +17,8 @@ def test_step_reaches_goal_within_accel_limit():
     assert abs(x[-1] - 0.75) < 1e-6
     v = [(x[i + 1] - x[i]) / dt for i in range(len(x) - 1)]
     assert max(abs(v[i + 1] - v[i]) / dt for i in range(len(v) - 1)) <= a * (1 + 1e-9)
+
+
+def test_max_acceleration_zero_switches_profile_off():
+    assert profile_accel(254, 0) is None
+    assert internal_target([0.0, 1.0, 1.0], None, 0.002) == [0.0, 1.0, 1.0]
