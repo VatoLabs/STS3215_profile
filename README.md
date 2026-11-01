@@ -1,6 +1,6 @@
 # The STS3215 tracks its own acceleration profile, not your goal
 
-> **Correction, 1 Nov 2026 (evening).** The register rule below holds with inertia on the servo output (rods on our bench; not yet tested on the arm, where the wrist roll and gripper may behave like no load), with or without gravity load: cap 50 gave 6.0 rad/s² on a balanced rod, against 7.7 predicted. With the bare horn and no load, cap 50 and cap 254 both give about 22 rad/s² (38 with the profile off), which matches the 10-28 rad/s² in Rhoban/bam PR #20. The cause is not known yet. The held-out results in the table are unchanged. Maximum_Acceleration = 0 switches the profile off (fixed in the code).
+> **Update, 1 Nov 2026 (late).** An earlier note here said the rule fails with no load. That did not replicate: a second servo with only the horn gave 7.2 rad/s² at cap 50 (rule 7.7). The rule held in 6 of 7 cap-50 tests; one unit's no-load run is an unexplained exception, under investigation. Maximum_Acceleration = 0 switches the profile off (fixed in the code).
 
 Vato Labs, measured 30 Oct to 1 Nov 2026.
 
