@@ -2,6 +2,11 @@
 
 > **Update, 1 Nov 2026 (late).** An earlier note here said the rule fails with no load. That did not replicate: a second servo with only the horn (no rod) gave 7.2 rad/s² at cap 50 (rule 7.7). The rule held in 6 of 7 cap-50 tests; one unit's horn-only run is an unexplained exception, still open. Maximum_Acceleration = 0 switches the profile off (fixed in the code).
 
+**Who did what, in one line.** One STS3215 on a bench, LeRobot's settings, a held-out 0.58 N·m load: stock MuJoCo
+Menagerie 68.3 mrad → BAM's STS3215 model (Rhoban), fitted only on T-K-233's public logs, 18.1 mrad → the same model
+with the goal passed through the firmware profile below, 7.1 mrad. The 68.3 → 18.1 step is BAM's work; the
+profile's own contribution is 18.1 → 7.1. Register 85's role was shown first by T-K-233 (Rhoban/bam PR #20).
+
 Vato Labs, measured 30 Oct to 1 Nov 2026.
 
 **Result.** At LeRobot's own settings (P=16, Acceleration and Maximum_Acceleration 254), on a single servo on a
@@ -86,11 +91,31 @@ day, with each servo friction-fitted in the same jig. The 0.58 N·m load lies in
 trajectory that switches torque off (free fall, not modelled: 74 mrad) was excluded before that load was run. The full
 per-arm calibration tool is in development at Vato Labs.
 
+## Status and next
+
+**Next:** contact-force estimation from the servos' own load and position readings, no added sensor, checked
+against a load cell.
+
+**Replicated (bench).** The servo's load reading is linear in the torque it holds: 15.3 % duty per N·m over five
+gravity torques 0-0.86 N·m on one servo, and 14.4-15.0 % per N·m on three servos at 0.63 N·m (within 4 %), one day.
+
+**Not yet replicated** (one assembled SO-101 arm, one day, 6 Nov 2026; shared early, may change):
+- In MuJoCo, joint `frictionloss` is a soft constraint, so a servo holding still under load slowly creeps. BAM's
+  CPU MuJoCo controller does not counter it (its mjlab path does since 13 Jul 2026, `stiff_frictionloss`, G.
+  Passault). In our arm twin the joints crept about 5 mrad per 2.5 s hold where the real arm did not move at all,
+  which hid most of the arm's approach-direction effect. `model.opt.noslip_iterations = 20` removed the creep.
+- Where the arm stops depends on the side it comes from: about 27 mm apart at the gripper for the same goal
+  (LeRobot #3400 reported the effect on shoulder_pan at P=16, Apr 2026). Per joint, three numbers (stiffness, a
+  friction floor and friction rising with gravity load) predicted held-out stopping points to about 2 mm at the
+  tip, from about four poses approached from both sides.
+
 **Credits** (earliest first).
 - [BAM](https://github.com/Rhoban/bam) (arXiv 2410.08650, Oct 2024) supplied the servo model; it has clamped the velocity of the internal target since March 2025.
 - K-Scale's servo driver ([zeroth-bot](https://github.com/kscalelabs/zeroth-bot), Feb 2025, then [kos-zbot](https://github.com/kscalelabs/kos-zbot)) converts register 41 at 100 steps/s² per unit.
 - An [unofficial STS memory table](https://aifitlab-wiki.super.site/feetech-servo-motor-docs/feetech-sts-servo-memory-table-analysis) gives register 41's unit (8.7°/s²) and describes 85 as a factory acceleration limit. It says Acceleration 0 means maximum acceleration; we measured it acting as 50.
 - [sts3215-firmware](https://github.com/0o8o0-blip/sts3215-firmware) (Apr 2026) implements a trapezoid profile and attributes the response delay to it.
+- [LeRobot #3400](https://github.com/huggingface/lerobot/issues/3400) (0o8o0-blip, 17 Apr 2026) first reported that at P=16 the joint lands at different positions depending on the approach direction.
+- G. Passault, [BAM commit 62bd8ce](https://github.com/Rhoban/bam/commit/62bd8ce) (13 Jul 2026), stiffened `frictionloss` in BAM's mjlab actuator because a statically held joint creeps.
 - T-K-233 ([Rhoban/bam #20](https://github.com/Rhoban/bam/pull/20), 29 Sep 2026) first showed that register 85 limits the profile and recorded the 12 V logs our model was fitted on.
 - [MetalSim](https://github.com/pulipakaa24/MetalSim) (1 Nov 2026) used the same 100 steps/s² unit at 254 and marked the profile's shape as inferred.
 - [LeRobot](https://github.com/huggingface/lerobot) sets the arm's registers.
